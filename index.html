@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>AgriSmart AI</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Segoe UI',sans-serif;
+        }
+
+        body{
+            background:#eef2f3;
+        }
+
+        /* Navbar */
+
+        .navbar{
+            background:#1b5e20;
+            color:white;
+            padding:18px 30px;
+            font-size:24px;
+            font-weight:bold;
+            letter-spacing:1px;
+        }
+
+        /* Main Layout */
+
+        .container{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            margin-top:30px;
+            margin-bottom:30px;
+        }
+
+        /* Card */
+
+        .card{
+            width:500px;
+            background:white;
+            padding:25px;
+            border-radius:14px;
+            box-shadow:0px 6px 20px rgba(0,0,0,0.2);
+        }
+
+        h2{
+            text-align:center;
+            margin-bottom:20px;
+            color:#2e7d32;
+        }
+
+        /* Inputs */
+
+        input,select{
+
+            width:100%;
+            padding:12px;
+            margin:10px 0;
+            border-radius:8px;
+            border:1px solid #ccc;
+            font-size:15px;
+        }
+
+        /* Button */
+
+        button{
+
+            width:100%;
+            padding:13px;
+            margin-top:10px;
+            background:#2e7d32;
+            color:white;
+            border:none;
+            border-radius:8px;
+            font-size:17px;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        button:hover{
+
+            background:#1b5e20;
+        }
+
+        /* Result Box */
+
+        #result{
+
+            margin-top:20px;
+            padding:18px;
+            border-radius:10px;
+            background:#f1f8e9;
+            border-left:6px solid #4CAF50;
+            line-height:1.8;
+            font-size:15px;
+        }
+
+        canvas{
+
+            margin-top:25px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<!-- Navbar -->
+
+<div class="navbar">
+    🌾 AgriSmart AI - Smart Farming Decision System
+</div>
+
+<!-- Main Section -->
+
+<div class="container">
+
+<div class="card">
+
+    <h2>Farmer Input</h2>
+
+    <!-- Crop -->
+
+    <select id="crop" onchange="showSubtype()">
+
+        <option value="">Select Crop</option>
+
+        <option value="wheat">Wheat</option>
+
+        <option value="rice">Rice</option>
+
+        <option value="sugarcane">Sugarcane</option>
+
+        <option value="cotton">Cotton</option>
+
+        <option value="sunflower">Sunflower</option>
+
+        <option value="cereals">Cereals</option>
+
+        <option value="grains">Grains</option>
+
+    </select>
+
+    <!-- Subtype -->
+
+    <select id="subtype" style="display:none;"></select>
+
+    <!-- Inputs -->
+
+    <input type="number" id="land" placeholder="Land Size (acres)">
+
+    <input type="number" id="quantity" placeholder="Production (kg)">
+
+    <input type="number" id="investment" placeholder="Total Investment (₹)">
+
+    <input type="text" id="location" placeholder="Location (Delhi, Pune, Village etc.)">
+
+    <!-- Storage -->
+
+    <select id="storage">
+
+        <option value="">Storage Available?</option>
+
+        <option value="yes">Yes</option>
+
+        <option value="no">No</option>
+
+    </select>
+
+    <!-- Button -->
+
+    <button onclick="analyze()">
+        Generate AI Report
+    </button>
+
+    <!-- Result -->
+
+    <div id="result"></div>
+
+    <!-- Chart -->
+
+    <canvas id="myChart" height="200"></canvas>
+
+</div>
+
+</div>
+
+<script>
+
+    // Subtype Logic
+
+    function showSubtype(){
+
+        let crop = document.getElementById("crop").value;
+
+        let subtype = document.getElementById("subtype");
+
+        subtype.style.display = "none";
+
+        subtype.innerHTML = "";
+
+        if(crop === "cereals"){
+
+            subtype.style.display = "block";
+
+            subtype.innerHTML = `
+
+                <option value="">Select Cereal</option>
+
+                <option value="maize">Maize</option>
+
+                <option value="barley">Barley</option>
+
+            `;
+        }
+
+        if(crop === "grains"){
+
+            subtype.style.display = "block";
+
+            subtype.innerHTML = `
+
+                <option value="">Select Grain</option>
+
+                <option value="millets">Millets</option>
+
+                <option value="pulses">Pulses</option>
+
+            `;
+        }
+    }
+
+    // Main AI Logic
+
+    function analyze(){
+
+        let crop = document.getElementById("crop").value;
+
+        let subtype = document.getElementById("subtype").value;
+
+        let land = parseFloat(document.getElementById("land").value);
+
+        let quantity = parseFloat(document.getElementById("quantity").value);
+
+        let investment = parseFloat(document.getElementById("investment").value);
+
+        let location = document.getElementById("location").value.toLowerCase();
+
+        let storage = document.getElementById("storage").value;
+
+        let result = "<h3>📊 AI Analysis Report</h3>";
+
+        // Productivity Calculation
+
+        let productivity = quantity / land;
+
+        result += `<b>Productivity:</b> ${productivity.toFixed(2)} kg/acre<br>`;
+
+        // Productivity Scale
+
+        if(productivity > 600){
+
+            result += `
+
+            <br>
+
+            <b>Productivity Level:</b><br><br>
+
+            <div style="
+            background:green;
+            color:white;
+            padding:10px;
+            border-radius:6px;
+            width:180px;
+            text-align:center;
+            font-weight:bold;">
+
+            HIGH PRODUCTIVITY
+
+            </div><br>
+
+            `;
+        }
+
+        else if(productivity > 300){
+
+            result += `
+
+            <br>
+
+            <b>Productivity Level:</b><br><br>
+
+            <div style="
+            background:gold;
+            color:black;
+            padding:10px;
+            border-radius:6px;
+            width:200px;
+            text-align:center;
+            font-weight:bold;">
+
+            MODERATE PRODUCTIVITY
+
+            </div><br>
+
+            `;
+        }
+
+        else{
+
+            result += `
+
+            <br>
+
+            <b>Productivity Level:</b><br><br>
+
+            <div style="
+            background:red;
+            color:white;
+            padding:10px;
+            border-radius:6px;
+            width:180px;
+            text-align:center;
+            font-weight:bold;">
+
+            LOW PRODUCTIVITY
+
+            </div><br>
+
+            `;
+        }
+
+        // Market Price Logic
+
+        let price = 0;
+
+        if(crop === "wheat") price = 25;
+
+        else if(crop === "rice") price = 30;
+
+        else if(crop === "sugarcane") price = 3;
+
+        else if(crop === "cotton") price = 70;
+
+        else if(crop === "sunflower") price = 60;
+
+        if(crop === "cereals"){
+
+            if(subtype === "maize") price = 22;
+
+            if(subtype === "barley") price = 20;
+        }
+
+        if(crop === "grains"){
+
+            if(subtype === "millets") price = 28;
+
+            if(subtype === "pulses") price = 80;
+        }
+
+        // Revenue
+
+        let revenue = quantity * price;
+
+        // Profit
+
+        let profit = revenue - investment;
+
+        result += `<b>Market Price:</b> ₹${price}/kg<br>`;
+
+        result += `<b>Estimated Revenue:</b> ₹${revenue}<br>`;
+
+        result += `<b>Total Investment:</b> ₹${investment}<br>`;
+
+        result += `<b>Estimated Profit:</b> ₹${profit}<br><br>`;
+
+        // Market Suggestions
+
+        let metro = ["delhi","mumbai","bangalore","hyderabad","chennai","kolkata","pune"];
+
+        let tier2 = ["nagpur","jaipur","lucknow","bhopal","indore","patna"];
+
+        if(metro.some(city => location.includes(city))){
+
+            result += "👉 Best Market: Metro Wholesale Markets<br>";
+
+            result += "👉 High Demand Expected<br>";
+        }
+
+        else if(tier2.some(city => location.includes(city))){
+
+            result += "👉 Best Market: Regional Mandis<br>";
+
+            result += "👉 Moderate Demand Expected<br>";
+        }
+
+        else{
+
+            result += "👉 Best Market: Nearby District Mandis<br>";
+        }
+
+        // Google Map Link
+
+        let mapLink = `https://www.google.com/maps/search/marketyards+near+${location}`;
+
+        result += `<br><b>Nearby Markets:</b>
+
+        <a href="${mapLink}" target="_blank">
+
+        View on Map
+
+        </a><br>`;
+
+        // AI Suggestions
+
+        result += "<br><b>AI Suggestions:</b><br>";
+
+        if(productivity < 300){
+
+            result += "👉 Improve irrigation facilities<br>";
+
+            result += "👉 Use better quality seeds and fertilizers<br>";
+        }
+
+        if(storage === "yes"){
+
+            result += "👉 Store crops and sell later for higher prices<br>";
+        }
+
+        else{
+
+            result += "👉 Sell crops quickly to avoid spoilage<br>";
+        }
+
+        result += "👉 Monitor weather and market trends regularly<br>";
+
+        result += "👉 Use modern farming methods for better output<br>";
+
+        // Goal
+
+        result += "<br><b>Goal:</b> Increase farmer income and reduce food wastage.";
+
+        // Display Result
+
+        document.getElementById("result").innerHTML = result;
+
+        // Chart
+
+        let ctx = document.getElementById('myChart').getContext('2d');
+
+        if(window.chart){
+
+            window.chart.destroy();
+        }
+
+        window.chart = new Chart(ctx, {
+
+            type:'bar',
+
+            data:{
+
+                labels:['Investment','Revenue'],
+
+                datasets:[{
+
+                    label:'Financial Analysis',
+
+                    data:[investment,revenue],
+
+                    backgroundColor:['orange','green']
+
+                }]
+            }
+        });
+    }
+
+</script>
+
+</body>
+</html>
